@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("touch")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Windows console version of the Linux touch command")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("touch")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright © 2014 Stian Hanger")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

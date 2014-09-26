@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace touch {
 	class Program {
@@ -25,6 +26,14 @@ namespace touch {
 
 			for (var i = 0; i < args.Length; i++) {
 				switch (args[i]) {
+					case "--version":
+						Console.WriteLine("touch v" + Assembly.GetExecutingAssembly().GetName().Version);
+						return;
+
+					case "-f":
+						// Ignored!
+						break;
+
 					case "-a":
 						setLastWriteTime = false;
 						break;
@@ -38,10 +47,12 @@ namespace touch {
 						setLastWriteTime = true;
 						break;
 
+					case "--no-create":
 					case "-c":
 						createIfNonExistant = false;
 						break;
 
+					case "-t":
 					case "-d":
 						if (i < (args.Length - 1)) {
 							DateTime temp;
@@ -78,7 +89,7 @@ namespace touch {
 								i++;
 							}
 							catch (Exception ex) {
-								error = ex.Message;
+								error = "Could not read date-time from the given file. " + ex.Message;
 							}
 						}
 						else {
@@ -112,6 +123,42 @@ namespace touch {
 					default:
 						filesToModify.Add(args[i]);
 						break;
+				}
+
+				if (args[i].StartsWith("--date=") ||
+					args[i].StartsWith("--time=")) {
+					DateTime temp;
+
+					if (DateTime.TryParse(args[i].Substring(args[i].IndexOf("=", StringComparison.CurrentCulture) + 1).Trim(), out temp)) {
+						lastAccessTime = temp;
+						lastWriteTime = temp;
+
+						setLastAccessTime = true;
+						setLastWriteTime = true;
+
+						i++;
+					}
+					else {
+						error = "Could not parse the given date-time string: \"" + args[i + 1] + "\"";
+						break;
+					}
+				}
+				else if (args[i].StartsWith("--reference=")) {
+					try {
+						var fileInfo = new FileInfo(args[i].Substring(args[i].IndexOf("=", StringComparison.CurrentCulture) + 1).Trim());
+
+						lastAccessTime = fileInfo.LastAccessTime;
+						lastWriteTime = fileInfo.LastWriteTime;
+
+						setLastAccessTime = true;
+						setLastWriteTime = true;
+
+						i++;
+					}
+					catch (Exception ex) {
+						error = "Could not read date-time from the given file. " + ex.Message;
+						break;
+					}
 				}
 
 				if (!string.IsNullOrWhiteSpace(error)) {
@@ -191,12 +238,14 @@ namespace touch {
 			Console.WriteLine("");
 
 			Console.WriteLine("Options");
-			Console.WriteLine(" -a          Change only the access time.");
-			Console.WriteLine(" -c          Do not create any files.");
-			Console.WriteLine(" -d string   Parse the string and use it instead of the current time.");
-			Console.WriteLine(" -m          Change only the modification time.");
-			Console.WriteLine(" -r file     Use the file's time instead of current time.");
-			Console.WriteLine(" -b seconds  Add number of seconds to the referenced time.");
+			Console.WriteLine(" -a                    Change only the access time.");
+			Console.WriteLine(" -c, --no-create       Do not create any files.");
+			Console.WriteLine(" -d, -t, --date=STRING Parse the string and use it instead of the current time.");
+			Console.WriteLine(" -m                    Change only the modification time.");
+			Console.WriteLine(" -r, --reference=FILE  Use the file's time instead of current time.");
+			Console.WriteLine(" -b seconds            Add number of seconds to the referenced time.");
+			Console.WriteLine(" --help                Display this help and exit.");
+			Console.WriteLine(" --version             Output version information and exit.");
 			Console.WriteLine("");
 
 			Console.WriteLine("Example");

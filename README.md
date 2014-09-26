@@ -1,6 +1,6 @@
 # touch
 
-A Windows console version of the Linux touch command.
+A Windows console version of the Linux touch command written in C#.
 
 **Syntax**
 
@@ -8,7 +8,7 @@ A Windows console version of the Linux touch command.
 
 The touch command updates the access and modification times of each file to the current system time.
 
-If you specify files that does not already exist, touch creates empty files with those names (unless the -c option is specified; see below).
+If you specify files that does not already exist, touch creates empty files with those names (unless the *-c* option is specified; see below).
 
 **Options**
 
